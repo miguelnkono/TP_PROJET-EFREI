@@ -1,20 +1,15 @@
 #include <stdio.h>
 #include "list.h"
+#include "utils.h"
+
+const char *file_name = "/home/gost/CLionProjects/TP_PROJET-EFREI/data/exemple1_from_chatGPT.txt";
 
 int main() {
-	list_t *list_test = create_list();
+	liste_adjacence *graphe = readGraph(file_name);
 
-	/*
-	* 1 1 0.95
-		1 2 0.04
-		1 3 0.01
-	 */
-	list_add_cell(list_test, 1, 0.95f);
-	list_add_cell(list_test, 2, 0.04f);
-	list_add_cell(list_test, 3, 0.01f);
+	graph_print(graphe);
 
-	list_print(list_test);
+	graph_free(graphe);
 
-	list_destroy(list_test);
 	return 0;
 }

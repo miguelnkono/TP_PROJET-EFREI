@@ -2,6 +2,7 @@
 #define INC_2526_TI301_PJT_LIST_H
 
 typedef struct __cellule__t {
+	int sommet_depart; // le sommet de depart de l'arête
 	int sommet_arrive; // le sommet d'arrivée de cette arête
 	float probabilite; // la probabilité de passage au sommet suivant
 	struct __cellule__t *sommet_suivante; // le sommet suivant dans le graphe
@@ -12,22 +13,21 @@ typedef struct {
 	arrete_t *tail;
 } list_t;
 
-// typedef list_t* *list_adjacency_t;
 typedef struct {
 	int taille; // taille du graphe
-	list_t *liste_adjacente; // tableau dynamique des listes adjacente
+	list_t *liste_arretes; // tableau dynamique des listes adjacente
 } liste_adjacence;
 
 // une fonction pour créer une « cellule »
-arrete_t *create_cell(int sommet_arrive, float probabilite);
+arrete_t *create_cell(int sommet_depart, int sommet_arrive, float probabilite);
 
 // une fonction pour créer une « liste » vide ;
 list_t *create_list();
 
 // une fonction pour ajouter une cellule à une liste ;
-void list_add_cell(list_t *list, /*arrete_t *cellule*/ int sommet_arrive, float probabilite);
+void list_add_cell(list_t *list, /*arrete_t *cellule*/ int sommet_depart, int sommet_arrive, float probabilite);
 
-// une fonction pour aƯicher une liste ;
+// une fonction pour afficher une liste ;
 void list_print(const list_t *list);
 
 // une fonction pour détruire une liste ;

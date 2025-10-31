@@ -6,6 +6,6 @@
 /**
  * Pour la lecture des données dans un fichier text
  */
-liste_adjacence readGraph(const char *filename);
+liste_adjacence *readGraph(const char *filename);
 
 #endif
