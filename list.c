@@ -3,6 +3,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//arrete_t *create_cell(int sommet_depart, int sommet_arrive, float probabilite) {
+//    arrete_t *cellule;
+//    cellule = (arrete_t *) malloc(sizeof(arrete_t));
+//    if (NULL == cellule) {
+//        perror("malloc(cellule)");
+//        return NULL;
+//    }
+//
+//    cellule->sommet_depart = sommet_depart;
+//    cellule->sommet_arrive = sommet_arrive;
+//    cellule->probabilite = probabilite;
+//    cellule->sommet_suivante = NULL;
+//
+//    return cellule;
+//}
+
 arrete_t *create_cell(int sommet_depart, int sommet_arrive, float probabilite) {
     arrete_t *cellule;
     cellule = (arrete_t *) malloc(sizeof(arrete_t));
@@ -12,9 +28,12 @@ arrete_t *create_cell(int sommet_depart, int sommet_arrive, float probabilite) {
     }
 
     cellule->sommet_depart = sommet_depart;
-    cellule->sommet_arrive = sommet_arrive;
+    cellule->sommet_arrive = sommet_arrive;  // Vérifier que c'est bien arrivé
     cellule->probabilite = probabilite;
     cellule->sommet_suivante = NULL;
+
+    printf("DEBUG create_cell: Création cellule %d -> %d (prob=%.3f)\n",
+           sommet_depart, sommet_arrive, probabilite);
 
     return cellule;
 }
@@ -32,13 +51,33 @@ list_t *create_list() {
     return list;
 }
 
+//void list_add_cell(list_t *list, int sommet_depart, int sommet_arrive, float probabilite) {
+//    if (list == NULL) return;
+//
+//    arrete_t *new_cell = create_cell(sommet_depart, sommet_arrive, probabilite);
+//    if (new_cell == NULL) return;
+//
+//    new_cell->sommet_suivante = NULL;
+//
+//    // si la liste est vide.
+//    if (list->head == NULL) {
+//        list->head = new_cell;
+//        list->tail = new_cell;
+//    } else {
+//        list->tail->sommet_suivante = new_cell;
+//        list->tail = new_cell;
+//    }
+//}
+
 void list_add_cell(list_t *list, int sommet_depart, int sommet_arrive, float probabilite) {
     if (list == NULL) return;
 
     arrete_t *new_cell = create_cell(sommet_depart, sommet_arrive, probabilite);
     if (new_cell == NULL) return;
 
-    new_cell->sommet_suivante = NULL;
+    // Debug important
+    printf("DEBUG list_add_cell: Ajout arête %d -> %d (prob=%.3f)\n",
+           sommet_depart, sommet_arrive, probabilite);
 
     // si la liste est vide.
     if (list->head == NULL) {

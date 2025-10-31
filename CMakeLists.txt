@@ -6,5 +6,11 @@ set(CMAKE_C_STANDARD 11)
 add_executable(TI_301_PJT
     main.c utils.c utils.h
     list.c
-    list.h)
+    list.h
+    tarjan.c
+    tarjan.h
+    hasse.h
+    markov.c
+    markov.h
+    hasse.c)
 
