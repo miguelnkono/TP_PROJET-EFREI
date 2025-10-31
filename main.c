@@ -3,109 +3,69 @@
 #include "utils.h"
 #include "markov.h"
 #include "tarjan.h"
+#include "hasse.h"
+#include "visualization.h"  // Ajout de la nouvelle inclusion
 
-void verify_graph_edges(const liste_adjacence *graph) {
-	printf("\n=== VERIFICATION DES ARÊTES ===\n");
-	int total_edges = 0;
-
-	for (int i = 0; i < graph->taille; i++) {
-		list_t *liste = &graph->liste_arretes[i];
-		arrete_t *current = liste->head;
-		int edge_count = 0;
-
-		printf("Sommet %d: ", i + 1);
-		while (current != NULL) {
-			printf("%d->%d(%.3f) ", current->sommet_depart, current->sommet_arrive, current->probabilite);
-			current = current->sommet_suivante;
-			edge_count++;
-			total_edges++;
-		}
-
-		if (edge_count == 0) {
-			printf("AUCUNE ARÊTE");
-		}
-		printf("\n");
-	}
-	printf("Total des arêtes: %d\n", total_edges);
-}
-
-void debug_graph_structure(const liste_adjacence *graph) {
-	printf("=== STRUCTURE DU GRAPHE (Debug) ===\n");
-	printf("Nombre de sommets: %d\n", graph->taille);
-
-	for (int i = 0; i < graph->taille; i++) {
-		list_t *liste = &graph->liste_arretes[i];
-		printf("Sommet %d: ", i + 1);
-
-		if (liste->head == NULL) {
-			printf("AUCUNE ARÊTE\n");
-		} else {
-			arrete_t *current = liste->head;
-			while (current != NULL) {
-				printf("%d->%d(%.3f) ", current->sommet_depart, current->sommet_arrive, current->probabilite);
-				current = current->sommet_suivante;
-			}
-			printf("\n");
-		}
-	}
-	printf("=== FIN DEBUG ===\n");
-}
-
-void debug_mermaid_output(const char *filename) {
-	FILE *file = fopen(filename, "r");
-	if (file == NULL) {
-		printf("Impossible d'ouvrir le fichier %s\n", filename);
-		return;
-	}
-
-	printf("=== CONTENU DU FICHIER MERMAID ===\n");
-	char line[256];
-	while (fgets(line, sizeof(line), file)) {
-		printf("%s", line);
-	}
-	fclose(file);
-	printf("=== FIN DU CONTENU ===\n");
-}
-
-const char *file_name = "/home/gost/CLionProjects/TP_PROJET-EFREI/data/exemple1_from_chatGPT.txt";
+const char *file_name = "/home/gost/CLionProjects/TP_PROJET-EFREI/data/exemple";
 
 int main() {
-
 	printf("=== CHARGEMENT DU GRAPHE ===\n");
 	liste_adjacence *graphe = readGraph(file_name);
 
-	printf("\n=== VERIFICATION DES ARÊTES ===\n");
-	verify_graph_edges(graphe);
-
-	printf("\n=== AFFICHAGE DU GRAPHE ===\n");
-	graph_print(graphe);
-
-	printf("\n=== GENERATION GRAPHE MERMAID ===\n");
-	generate_mermaid_graph(graphe, "graphe_mermaid.mmd");
-	debug_mermaid_output("graphe_mermaid.mmd");
-
-	printf("\n=== AFFICHAGE DU GRAPHE ===\n");
-	graph_print(graphe);
+	printf("\n=== STATISTIQUES DU GRAPHE ===\n");
+	print_graph_statistics(graphe);
 
 	printf("\n=== VERIFICATION MARKOV ===\n");
 	verify_markov_property(graphe);
 
-	printf("\n=== GENERATION GRAPHE MERMAID ===\n");
-	generate_mermaid_graph(graphe, "graphe_mermaid.mmd");
+	// Génération des différentes visualisations
+	printf("\n=== GENERATION DES VISUALISATIONS ===\n");
+
+	// 1. Graphe complet standard
+	generate_mermaid_graph(graphe, "graphe_complet.mmd");
+
+	// 2. Graphe avec layout alternatif
+	generate_advanced_mermaid_graph(graphe, "graphe_dagre.mmd", LAYOUT_DAGRE, FILTER_NONE, 0.0);
+
+	// 3. Graphe simplifié (seulement probabilités élevées)
+	generate_simplified_graph(graphe, "graphe_simplifie.mmd", 0.3, 3);
+
+	// 4. Graphe filtré (seulement probabilités > 0.5)
+	generate_advanced_mermaid_graph(graphe, "graphe_filtre.mmd", LAYOUT_ELK, FILTER_HIGH_PROB, 0.5);
 
 	printf("\n=== ALGORITHME DE TARJAN ===\n");
 	t_partition *partition = tarjan(graphe);
-	print_partition(partition);
+	if (partition != NULL) {
+		print_partition(partition);
 
-	printf("\n=== GENERATION DIAGRAMME DE HASSE ===\n");
-	generate_mermaid_hasse(partition, graphe, "hasse_mermaid.mmd");
+		// 5. Graphe clusterisé par composantes
+		generate_clustered_graph(graphe, partition, "graphe_clusterise.mmd");
 
-	printf("\n=== ANALYSE DES CARACTERISTIQUES ===\n");
-	analyze_graph_characteristics(partition, graphe);
+		printf("\n=== GENERATION DIAGRAMME DE HASSE ===\n");
+		generate_mermaid_hasse(partition, graphe, "hasse_mermaid.mmd");
 
-	printf("\n=== NETTOYAGE MEMOIRE ===\n");
-	free_partition(partition);
+		printf("\n=== ANALYSE DES CARACTERISTIQUES ===\n");
+		analyze_graph_characteristics(partition, graphe);
+
+		// 6. Visualisation HTML interactive
+		generate_interactive_html(graphe, partition, "visualisation_interactive.html");
+
+		printf("\n=== NETTOYAGE MEMOIRE ===\n");
+		free_partition(partition);
+	} else {
+		printf("Erreur lors de l'exécution de l'algorithme de Tarjan\n");
+	}
+
 	graph_free(graphe);
+
+	printf("\n=== VISUALISATIONS GENEREES ===\n");
+	printf("1. graphe_complet.mmd - Graphe complet standard\n");
+	printf("2. graphe_dagre.mmd - Layout alternatif DAGRE\n");
+	printf("3. graphe_simplifie.mmd - Version simplifiée\n");
+	printf("4. graphe_filtre.mmd - Filtrage probabilités > 0.5\n");
+	printf("5. graphe_clusterise.mmd - Groupé par composantes\n");
+	printf("6. visualisation_interactive.html - Version web interactive\n");
+	printf("7. hasse_mermaid.mmd - Diagramme de Hasse\n");
 
 	return 0;
 }

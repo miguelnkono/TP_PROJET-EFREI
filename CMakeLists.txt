@@ -12,5 +12,7 @@ add_executable(TI_301_PJT
     hasse.h
     markov.c
     markov.h
-    hasse.c)
+    hasse.c
+    visualization.c
+    visualization.h)
 
