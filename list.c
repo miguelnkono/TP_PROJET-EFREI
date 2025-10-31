@@ -91,6 +91,7 @@ liste_adjacence *create_graph(int taille) {
         return NULL;
     }
 
+    // initialise la liste d'adjacence à vide
     for (int i = 0; i < taille; i++) {
         graph->liste_arretes[i].head = NULL;
         graph->liste_arretes[i].tail = NULL;
